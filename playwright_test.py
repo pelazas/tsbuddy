@@ -4,18 +4,19 @@ from product_detail_scraper import scrape_product_details
 from bs4 import BeautifulSoup
 import urllib.parse
 
+NUM_PRODUCTS_TO_SCRAPE = 10  # Number of products to scrape
+
 def amazon_search_url(query: str) -> str:
     base_url = "https://www.amazon.es/s"
     params = {"k": query}
     query_string = urllib.parse.urlencode(params)
     return f"{base_url}?{query_string}"
 
-def run():
-    query = "lightweight laptop 16 GB RAM"
+def run(query) -> list:
     url = amazon_search_url(query)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
         )
@@ -30,12 +31,15 @@ def run():
 
     soup = BeautifulSoup(html_content, "html.parser")
 
-    # ✅ Select all product divs using role="listitem"
     product_divs = soup.find_all("div", attrs={"role": "listitem"})
 
-    results = []
+    search_results = []
 
-    for product in product_divs[:2]:
+    print(f"Found {len(product_divs)} products for query: {query}")
+    print(f"Scraping the first {NUM_PRODUCTS_TO_SCRAPE} products...")
+    i = 0
+
+    for product in product_divs[:NUM_PRODUCTS_TO_SCRAPE]:
         title_elem = product.find("h2")
         link_elem = product.find("a", class_="a-link-normal s-line-clamp-4 s-link-style a-text-normal")
         price_whole = product.find("span", class_="a-price-whole")
@@ -48,24 +52,16 @@ def run():
 
         details = scrape_product_details(url) if url else {}
 
-        results.append({
+        search_results.append({
             "title": title,
             "price": price,
             "url": url,
+            "specs": details.get("specs"),
             "rating": details.get("rating"),
             "rating_distribution": details.get("rating_distribution", {}),
         })
+        i += 1
+        print(f"* Scraped product {i}: {title}")
+    
+    return search_results
 
-    for r in results:
-        print("📦 TITLE:", r["title"])
-        print("💰 PRICE:", r["price"])
-        print("🔗 URL:", r["url"])
-        print("⭐ RATING:", r["rating"])
-        print("RATING DISTRIBUTION:", r["rating_distribution"])
-        print("-" * 40)
-
-    print(len(results), "products found.")
-
-
-
-run()

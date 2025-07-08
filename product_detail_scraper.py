@@ -4,7 +4,7 @@ from typing import Optional
 
 def scrape_product_details(url: str) -> dict:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
         )
@@ -15,7 +15,8 @@ def scrape_product_details(url: str) -> dict:
         page.wait_for_timeout(3000)
 
         rating_text = None
-        summary_text = None
+        histogram_text = None
+        specs_text = None
 
         try:
             rating_elem = page.query_selector('span[data-hook="rating-out-of-text"]')
@@ -24,11 +25,13 @@ def scrape_product_details(url: str) -> dict:
             pass
 
         try:
-            histogram_text = page.locator("#histogramTable").inner_text()
-
-                        
-        except Exception as e:
-            print(f"Error extracting summary: {e}")
+            histogram_text = page.locator("#histogramTable").inner_text()  
+        except:
+            pass
+        
+        try:
+            specs_text = page.locator('#poExpander').inner_text()
+        except:
             pass
 
         browser.close()
@@ -36,4 +39,5 @@ def scrape_product_details(url: str) -> dict:
         return {
             "rating": rating_text,
             "rating_distribution": histogram_text,
+            "specs": specs_text,
         }
