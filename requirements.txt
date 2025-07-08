@@ -1,3 +1,6 @@
+langchain
+langchain-community
+langchain-anthropic
 langgraph
-langchain-core
-langchain-openai
+python-dotenv
+pydantic

@@ -1,25 +1,35 @@
+# agents/user_input_agent.py
 
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_openai import ChatOpenAI
+from agents import llm
+from pydantic import BaseModel, Field
+from langchain_core.messages import HumanMessage
 
-class Product(BaseModel):
-    """Product to be searched for"""
-    product_category: str = Field(description="Product category")
-    desired_features: str = Field(description="Desired features")
-    budget_range: str = Field(description="Budget range")
-    constraints: str = Field(description="Constraints")
 
-# llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
-# structured_llm = llm.with_structured_output(Product)
+# Define output schema for the LLM
+class UserQuery(BaseModel):
+    category: str = Field(..., description="Product category")
+    features: list[str] = Field(..., description="Desired features")
+    budget: str = Field(..., description="Budget range, like 'under $500' or '100-300€'")
+    constraints: list[str] = Field(..., description="Technical constraints like 'battery > 10h'")
 
-def get_product_category(user_query: str):
-    """
-    Get the product category from the user query.
-    """
-    # return structured_llm.invoke(user_query)
-    return {
-        "product_category": "headphones",
-        "desired_features": "noise cancelling",
-        "budget_range": "under 200€",
-        "constraints": "battery life > 10h"
-    }
+
+# Run function that receives the state and returns extracted structured info
+def run(state: dict):
+    user_input = state["messages"][-1]["content"]
+
+    schema_llm = llm.with_structured_output(UserQuery)
+
+    result = schema_llm.invoke([
+        {
+            "role": "system",
+            "content": """You are a product assistant. Extract the following fields from the user request:
+            - category (e.g. 'laptop', 'smartphone')
+            - features (desired features)
+            - budget (price range)
+            - constraints (technical requirements)
+            Format the output strictly in structured JSON."""
+        },
+        HumanMessage(content=user_input)
+    ])
+
+    return {**state, "parsed_query": result.model_dump()}
