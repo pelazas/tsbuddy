@@ -1,66 +1,50 @@
 # TechShoppingBuddy
 
-**techshoppingbuddy.com** is an AI-powered assistant that helps users make smarter purchase decisions in the consumer electronics space. It automates product search, spec comparison, review analysis, and ranks products based on price-to-value ratio — so you don't waste time digging through dozens of tabs and biased reviews.
+This project is an AI-powered assistant that helps users make smarter purchase decisions in the consumer electronics space. It automates product search, spec comparison, review analysis, and ranks products based on price-to-value ratio.
 
----
+## How it Works
 
-## 🚀 What It Does
+The project follows a pipeline structure, where each step is handled by a specific module:
 
-- 🔍 Takes a natural language query (e.g., *“best noise cancelling headphones under 200€”*)
-- 🌐 Searches product sources (Amazon, AliExpress, etc.) via API or scraping
-- 📊 Normalizes product specifications and filters duplicates
-- 💬 Analyzes customer reviews using LLMs
-- 🧠 Ranks items using a customizable value score (specs × price × sentiment)
-- 📝 Returns a report of top picks with reasoning, links, and scores
+1.  **User Input (`main.py`, `agents/user_input_agent.py`):** The `main.py` script starts the pipeline by getting user input. The `user_input_agent.py` then processes this natural language query to extract the essential information for a product search.
 
----
+2.  **Product Scraping (`scrapers/scrape_products.py`, `scrapers/product_detail_scraper.py`):**
+    *   `scrape_products.py`: Takes the parsed user query and searches for products on Amazon. It scrapes the search results to get a list of products, including their titles, prices, and URLs.
+    *   `product_detail_scraper.py`: For each product found, this script visits the product's page and scrapes detailed information, such as specifications, ratings, and rating distributions.
 
-## 🧠 Why It Exists
+3.  **Evaluation (`agents/evaluation_agent.py`):** The `evaluation_agent.py` takes the scraped product information and uses a large language model (LLM) to analyze it. It assigns a quality score from 1 to 10 based on the product's price, specifications, and ratings.
 
-Finding the *best* product online today means:
-- Reading conflicting blog reviews
-- Comparing specs across 20 tabs
-- Evaluating fake ratings
-- Making biased decisions from ads
+4.  **Execution (`main.py`):** The `main.py` script orchestrates the entire pipeline. It calls the user input agent, the scraping agents, and the evaluation agent in sequence. Finally, it prints the evaluation result for the first product found.
 
-This project builds an **autonomous shopping analyst** tool, streamlining the decision-making process using agents, scraping, and LLMs.
+## Project Structure
 
----
+```
+/Users/pelazas/Desktop/tsbuddy/
+├───.gitignore
+├───main.py
+├───README.md
+├───requirements.txt
+├───agents/
+│   ├───__init__.py
+│   ├───evaluation_agent.py
+│   └───user_input_agent.py
+└───scrapers/
+    ├───product_detail_scraper.py
+    └───scrape_products.py
+```
 
-## 🧩 How It Works (Pipeline)
+### Key Files
 
-### 1. `user_input_agent.py`
-Parses user query to extract:
-- Product category
-- Desired features
-- Budget range
-- Constraints (e.g. “battery life > 10h”)
+*   `main.py`: The entry point of the application. It orchestrates the entire pipeline from user input to product evaluation.
+*   `agents/user_input_agent.py`: Parses the user's natural language query into a concise search query.
+*   `scrapers/scrape_products.py`: Scrapes Amazon search results for a given query.
+*   `scrapers/product_detail_scraper.py`: Scrapes the details of a single product page.
+*   `agents/evaluation_agent.py`: Evaluates a product based on its scraped data and provides a score and explanation.
+*   `requirements.txt`: Lists the Python dependencies for the project.
+*   `README.md`: Provides a high-level overview of the project.
 
-### 2. `search_agent.py`
-Scrapes or queries external APIs to find matching products.
-Returns raw product data (titles, specs, price, URL, reviews).
+## How to Run
 
-### 3. `data_agent.py`
-Cleans and structures data:
-- Normalize units (e.g., GB, mAh)
-- Remove duplicates
-- Standardize fields across vendors
-
-### 4. `review_agent.py`
-Uses LLM (OpenAI, HF, etc.) to:
-- Summarize reviews
-- Detect common pros/cons
-- Flag misleading patterns
-
-### 5. `ranking_agent.py`
-Applies a scoring function: ValueScore = (spec_weight × performance) + (sentiment_weight × review_score) - price_penalty
-This agent ranks the best-value products per user criteria.
-
-### 6. `report_agent.py`
-Generates a final markdown or web-ready report:
-- Top 3 picks
-- Key specs
-- Value scores
-- Short AI-generated rationale
-- Purchase links
-
+1.  Install the dependencies: `pip install -r requirements.txt`
+2.  Run the main script: `python main.py`
+3.  Enter a description of the product you are looking for when prompted.
