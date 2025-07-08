@@ -2,7 +2,7 @@ from agents import user_input_agent
 from agents.evaluation_agent import run as evaluation_run
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
-import playwright_test
+from scrapers import scrape_products
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -21,9 +21,9 @@ def run_pipeline():
     user_query_result = user_input_agent.run(state)
     state["messages"].extend(user_query_result["messages"])
 
-    # 3. Call the run method in playwright_test.py with the parsed query, store the search_results in the state
+    # 3. Call the run method in scrape_products.py with the parsed query, store the search_results in the state
     parsed_query = state["messages"][-1]["content"]
-    search_results = playwright_test.run(parsed_query)
+    search_results = scrape_products.run(parsed_query)
     state["search_results"].append(search_results)
 
     # 4. Call the Evaluation agent with the state, print the evaluation results
