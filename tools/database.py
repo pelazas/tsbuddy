@@ -6,13 +6,14 @@ import os
 load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/")
 
-def save_products_to_db(products):
+def save_products_to_db(products, category):
     now = datetime.utcnow()
     client = MongoClient(MONGO_URL)
     db = client['tech_shopping_buddy']
     collection = db['products']
     for product in products:
         product["created_at"] = now
+        product["category"] = category
         existing = collection.find_one({"title": product["title"]})
         if existing:
             # Update the existing document with new data

@@ -8,9 +8,10 @@ from tools.database import save_products_to_db
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
-    search_results: list
+    products: list
 
 def run_pipeline():
+    input_category = input("Category: (e.g., laptops, phones, etc.):\n> ")
     user_input = input("Describe what you're looking for:\n> ")
 
     # 1. Initialize state
@@ -46,7 +47,7 @@ def run_pipeline():
 
     # Save products to MongoDB
     if state["products"]:
-        save_products_to_db(state["products"])
+        save_products_to_db(state["products"], input_category)
         print("\n"+40*'*')
         print("Products saved to MongoDB.")
 
