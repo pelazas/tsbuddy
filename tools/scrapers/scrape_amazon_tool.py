@@ -4,7 +4,6 @@ from tools.scrapers.product_detail_scraper import scrape_product_details
 from bs4 import BeautifulSoup
 import urllib.parse
 
-NUM_PRODUCTS_TO_SCRAPE = 10  # Number of products to scrape
 
 def amazon_search_url(query: str) -> str:
     base_url = "https://www.amazon.es/s"
@@ -12,7 +11,7 @@ def amazon_search_url(query: str) -> str:
     query_string = urllib.parse.urlencode(params)
     return f"{base_url}?{query_string}"
 
-def run(query) -> list:
+def run(query, numberOfProducts) -> list:
     url = amazon_search_url(query)
 
     with sync_playwright() as p:
@@ -36,10 +35,10 @@ def run(query) -> list:
     search_results = []
 
     print(f"Found {len(product_divs)} products for query: {query}")
-    print(f"Scraping the first {NUM_PRODUCTS_TO_SCRAPE} products...")
+    print(f"Scraping the first {numberOfProducts} products...")
     i = 0
 
-    for product in product_divs[:NUM_PRODUCTS_TO_SCRAPE]:
+    for product in product_divs[:numberOfProducts]:
         title_elem = product.find("h2")
         link_elem = product.find("a", class_="a-link-normal s-line-clamp-4 s-link-style a-text-normal")
         price_whole = product.find("span", class_="a-price-whole")
