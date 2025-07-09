@@ -60,6 +60,7 @@ def formatProducts(products: list):
             "rating_distribution": json.dumps(parse_rating_distribution(product.get("rating_distribution"))) if product.get("rating_distribution") else None,
             "score": parse_score(product.get("score")),
             "explanation": product.get("explanation"),
+            "n_reviews": product.get("n_reviews"),
         }
         formatted_products.append(formatted)
     return formatted_products

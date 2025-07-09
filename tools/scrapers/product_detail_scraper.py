@@ -16,6 +16,7 @@ def scrape_product_details(url: str) -> dict:
         rating_text = None
         histogram_text = None
         specs_text = None
+        n_reviews = None
 
         try:
             rating_elem = page.query_selector('span[data-hook="rating-out-of-text"]')
@@ -33,10 +34,18 @@ def scrape_product_details(url: str) -> dict:
         except:
             pass
 
+        try:
+            n_reviews_elem = page.query_selector('#acrCustomerReviewText')
+            n_reviews = n_reviews_elem.inner_text().strip() if n_reviews_elem else None
+            print(n_reviews)
+        except:
+            pass
+
         browser.close()
 
         return {
             "rating": rating_text,
             "rating_distribution": histogram_text,
             "specs": specs_text,
+            "n_reviews": n_reviews,
         }
