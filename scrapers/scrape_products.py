@@ -4,7 +4,7 @@ from scrapers.product_detail_scraper import scrape_product_details
 from bs4 import BeautifulSoup
 import urllib.parse
 
-NUM_PRODUCTS_TO_SCRAPE = 10  # Number of products to scrape
+NUM_PRODUCTS_TO_SCRAPE = 3  # Number of products to scrape
 
 def amazon_search_url(query: str) -> str:
     base_url = "https://www.amazon.es/s"

@@ -1,5 +1,6 @@
 from agents import user_input_agent
 from agents.evaluation_agent import run as evaluation_run
+from agents.formatting_agent import run as formatting_run
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
 from scrapers import scrape_products
@@ -35,6 +36,11 @@ def run_pipeline():
         print(evaluation_result["messages"][0]["content"])
     else:
         print("No products found.")
+
+    print("\n"+40*'*')
+    print("Formatting Products...")
+    formatted_result = formatting_run(state)
+    state["products"] = formatted_result["products"]
 
     # Print all products with all fields
     print("\n"+40*'*')
