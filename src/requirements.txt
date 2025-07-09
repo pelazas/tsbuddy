@@ -7,3 +7,4 @@ pydantic
 playwright
 pymongo
 flask
+bs4
