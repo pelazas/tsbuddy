@@ -44,7 +44,8 @@ def run(query) -> list:
         link_elem = product.find("a", class_="a-link-normal s-line-clamp-4 s-link-style a-text-normal")
         price_whole = product.find("span", class_="a-price-whole")
         price_frac = product.find("span", class_="a-price-fraction")
-        price_symbol = product.find("span", class_="a-price-symbol").get_text(strip=True)
+        price_symbol_elem = product.find("span", class_="a-price-symbol")
+        price_symbol = price_symbol_elem.get_text(strip=True) if price_symbol_elem else ""
 
         title = title_elem.get_text(strip=True) if title_elem else None
         url = "https://www.amazon.es" + link_elem["href"] if link_elem else None

@@ -1,20 +1,17 @@
-# agents/user_input_agent.py
-
 import json
 from agents import llm
 
 def run(state: dict):
-    if not state["search_results"]:
+    if not state["products"]:
         return {"messages": [{"role": "assistant", "content": "No product to evaluate."}]}
-    search_results = state["search_results"][-1]
 
-    system_message = f"""
+    system_message = """
         You are a product evaluation agent. Your task is to analyze the information provided about a product and assign it an overall quality score from 1 to 10, where:
 
         - 1 means very poor quality or poor value,
         - 10 means excellent quality and outstanding value.
 
-        I will provide you with a list of the products.
+        I will provide you with a product
 
         Instructions:
         1. Consider the price relative to the specifications — better specs at a lower price should increase the score.
@@ -26,21 +23,27 @@ def run(state: dict):
         - "explanation": a concise summary of the main reasons behind the score
 
         Example output:
-
-        {{
+        {
         "score": 8,
         "explanation": "Good CPU model with high speed and sufficient cache, competitive price, rating of 4.2 with mostly positive reviews."
-        }}
+        }
         """
 
-    messages = [
-        {"role": "system", "content": system_message},
-        {
-            "role": "user",
-            "content": json.dumps(search_results, ensure_ascii=False, indent=2)  # <-- serialize to string
-        }
-    ]
+    for product in state["products"]:
+        messages = [
+            {"role": "system", "content": system_message},
+            {
+                "role": "user",
+                "content": json.dumps(product, ensure_ascii=False, indent=2)
+            }
+        ]
+        reply = llm.invoke(messages)
+        try:
+            result = json.loads(reply.content)
+            product["score"] = result.get("score")
+            product["explanation"] = result.get("explanation")
+        except Exception:
+            product["score"] = None
+            product["explanation"] = "Evaluation failed."
 
-    reply = llm.invoke(messages)
-
-    return {"messages": [{"role": "assistant", "content": reply.content}]}
+    return {"messages": [{"role": "assistant", "content": "Products evaluated."}], "products": state["products"]}

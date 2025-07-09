@@ -1,5 +1,4 @@
 from playwright.sync_api import sync_playwright
-from bs4 import BeautifulSoup
 from typing import Optional
 
 def scrape_product_details(url: str) -> dict:

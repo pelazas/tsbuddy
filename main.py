@@ -14,7 +14,7 @@ def run_pipeline():
     # 1. Initialize state
     state: State = {
         "messages": [{"role": "user", "content": user_input}],
-        "search_results": [],
+        "products": [],
     }
 
     # 2. User Input Agent with the user's query
@@ -24,19 +24,25 @@ def run_pipeline():
     # 3. Call the run method in scrape_products.py with the parsed query, store the search_results in the state
     parsed_query = state["messages"][-1]["content"]
     search_results = scrape_products.run(parsed_query)
-    state["search_results"].append(search_results)
+    state["products"].extend(search_results)
 
     # 4. Call the Evaluation agent with the state, print the evaluation results
-    # We'll evaluate the first product as an example
-    if search_results and len(search_results) > 0 and search_results[0]:
-        eval_state = state.copy()
-        # Pass the first product (dict) as a single-item list
-        eval_state["search_results"] = [search_results[0]]
-        evaluation_result = evaluation_run(eval_state)
+    print("\n"+40*'*')
+    print("Evaluating Products...")
+    if search_results and len(search_results) > 0:
+        evaluation_result = evaluation_run(state)
         print("Evaluation Result:")
         print(evaluation_result["messages"][0]["content"])
     else:
         print("No products found.")
+
+    # Print all products with all fields
+    print("\n"+40*'*')
+    print("All Products with Scores and Explanations:")
+    for idx, product in enumerate(state["products"], 1):
+        print(f"\nProduct {idx}:")
+        for key, value in product.items():
+            print(f"  {key}: {value}")
 
 if __name__ == "__main__":
     run_pipeline()
