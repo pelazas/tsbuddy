@@ -14,7 +14,9 @@ The project follows a pipeline structure, where each step is handled by a specif
 
 4.  **Formatting (`agents/formatting_agent.py`):** Takes the evaluated products and formats them into a clear and readable format, adding a title and a summary of the results.
 
-5.  **Execution (`main.py`):** The `main.py` script orchestrates the entire pipeline. It calls the user input agent, the scraping agent, the evaluation agent, and the formatting agent in sequence. Finally, it prints the formatted results.
+5.  **Database Storage (`database.py`):** The formatted products are then saved to a MongoDB database.
+
+6.  **Execution (`main.py`):** The `main.py` script orchestrates the entire pipeline. It calls the user input agent, the scraping agent, the evaluation agent, the formatting agent, and the database module in sequence. Finally, it prints the formatted results.
 
 ## Project Structure
 
@@ -24,6 +26,7 @@ The project follows a pipeline structure, where each step is handled by a specif
 ├───main.py
 ├───README.md
 ├───requirements.txt
+├───database.py
 ├───agents/
 │   ├───__init__.py
 │   ├───evaluation_agent.py
@@ -37,6 +40,7 @@ The project follows a pipeline structure, where each step is handled by a specif
 ### Key Files
 
 *   `main.py`: The entry point of the application. It orchestrates the entire pipeline from user input to product evaluation.
+*   `database.py`: Handles the connection to the MongoDB database and saves the products.
 *   `agents/user_input_agent.py`: Parses the user's natural language query into a concise search query.
 *   `scrapers/scrape_products.py`: Scrapes Amazon search results for a given query.
 *   `scrapers/product_detail_scraper.py`: Scrapes the details of a single product page.
@@ -48,9 +52,10 @@ The project follows a pipeline structure, where each step is handled by a specif
 ## How to Run
 
 1.  Install the dependencies: `pip install -r requirements.txt`
-2.  Create a `.env` file in the root directory and add your Anthropic API key:
+2.  Make sure you have a MongoDB instance running on `mongodb://localhost:27017/`.
+3.  Create a `.env` file in the root directory and add your Anthropic API key:
     ```
     ANTHROPIC_API_KEY=your_api_key
     ```
-3.  Run the main script: `python main.py`
-4.  Enter a description of the product you are looking for when prompted.
+4.  Run the main script: `python main.py`
+5.  Enter a description of the product you are looking for when prompted.

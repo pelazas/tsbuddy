@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from scrapers.product_detail_scraper import scrape_product_details
+from tools.scrapers.product_detail_scraper import scrape_product_details
 
 from bs4 import BeautifulSoup
 import urllib.parse

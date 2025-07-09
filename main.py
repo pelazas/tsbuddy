@@ -1,9 +1,10 @@
 from agents import user_input_agent
 from agents.evaluation_agent import run as evaluation_run
-from agents.formatting_agent import run as formatting_run
+from tools.formatting_tool import formatProducts
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
-from scrapers import scrape_products
+from tools.scrapers import scrape_amazon_tool
+from database import save_products_to_db
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -24,7 +25,7 @@ def run_pipeline():
 
     # 3. Call the run method in scrape_products.py with the parsed query, store the search_results in the state
     parsed_query = state["messages"][-1]["content"]
-    search_results = scrape_products.run(parsed_query)
+    search_results = scrape_amazon_tool.run(parsed_query)
     state["products"].extend(search_results)
 
     # 4. Call the Evaluation agent with the state, print the evaluation results
@@ -39,8 +40,15 @@ def run_pipeline():
 
     print("\n"+40*'*')
     print("Formatting Products...")
-    formatted_result = formatting_run(state)
-    state["products"] = formatted_result["products"]
+    products = state["products"]
+    formatted_result = formatProducts(products)
+    state["products"] = formatted_result
+
+    # Save products to MongoDB
+    if state["products"]:
+        save_products_to_db(state["products"])
+        print("\n"+40*'*')
+        print("Products saved to MongoDB.")
 
     # Print all products with all fields
     print("\n"+40*'*')
