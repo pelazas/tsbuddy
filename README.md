@@ -4,19 +4,19 @@ This project is an AI-powered assistant that helps users make smarter purchase d
 
 ## How it Works
 
-The project follows a pipeline structure, where each step is handled by a specific agent:
+The project follows a pipeline structure, where each step is handled by a specific tool:
 
-1.  **User Input (`agents/user_input_agent.py`):** Processes the user's natural language query to extract the essential information for a product search.
+1.  **User Input:** The user is prompted to describe the product they are looking for.
 
-2.  **Product Scraping (`scrapers/scrape_products.py`):** Takes the parsed user query and searches for products on Amazon, scraping the search results to get a list of products, including their titles, prices, and URLs.
+2.  **Product Scraping (`tools/scrapers/scrape_amazon_tool.py`):** Takes the user's query and searches for products on Amazon, scraping the search results to get a list of products, including their titles, prices, and URLs.
 
-3.  **Evaluation (`agents/evaluation_agent.py`):** Takes the scraped product information and uses a large language model (LLM) to analyze it, assigning a quality score from 1 to 10 based on the product's price, specifications, and ratings.
+3.  **Product Evaluation:** The scraped product information is then evaluated by a large language model (LLM) to assign a quality score from 1 to 10 based on the product's price, specifications, and ratings.
 
-4.  **Formatting (`agents/formatting_agent.py`):** Takes the evaluated products and formats them into a clear and readable format, adding a title and a summary of the results.
+4.  **Data Formatting (`tools/formatting_tool.py`):** The evaluated products are formatted to be saved to a database.
 
 5.  **Database Storage (`database.py`):** The formatted products are then saved to a MongoDB database.
 
-6.  **Execution (`main.py`):** The `main.py` script orchestrates the entire pipeline. It calls the user input agent, the scraping agent, the evaluation agent, the formatting agent, and the database module in sequence. Finally, it prints the formatted results.
+6.  **Execution (`main.py`):** The `main.py` script orchestrates the entire pipeline. It calls the scraping tool, the evaluation logic, the formatting tool, and the database module in sequence. Finally, it prints the formatted results.
 
 ## Project Structure
 
@@ -27,25 +27,20 @@ The project follows a pipeline structure, where each step is handled by a specif
 ├───README.md
 ├───requirements.txt
 ├───database.py
-├───agents/
-│   ├───__init__.py
-│   ├───evaluation_agent.py
-│   ├───user_input_agent.py
-│   └───formatting_agent.py
-└───scrapers/
-    ├───product_detail_scraper.py
-    └───scrape_products.py
+└───tools/
+    ├───scrapers/
+    │   ├───product_detail_scraper.py
+    │   └───scrape_amazon_tool.py
+    └───formatting_tool.py
 ```
 
 ### Key Files
 
 *   `main.py`: The entry point of the application. It orchestrates the entire pipeline from user input to product evaluation.
 *   `database.py`: Handles the connection to the MongoDB database and saves the products.
-*   `agents/user_input_agent.py`: Parses the user's natural language query into a concise search query.
-*   `scrapers/scrape_products.py`: Scrapes Amazon search results for a given query.
-*   `scrapers/product_detail_scraper.py`: Scrapes the details of a single product page.
-*   `agents/evaluation_agent.py`: Evaluates a product based on its scraped data and provides a score and explanation.
-*   `agents/formatting_agent.py`: Formats the evaluated products into a clear and readable format.
+*   `tools/scrapers/scrape_amazon_tool.py`: Scrapes Amazon search results for a given query.
+*   `tools/scrapers/product_detail_scraper.py`: Scrapes the details of a single product page.
+*   `tools/formatting_tool.py`: Formats the evaluated products to be saved to a database.
 *   `requirements.txt`: Lists the Python dependencies for the project.
 *   `README.md`: Provides a high-level overview of the project.
 
