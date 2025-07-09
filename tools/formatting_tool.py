@@ -61,6 +61,7 @@ def formatProducts(products: list):
             "score": parse_score(product.get("score")),
             "explanation": product.get("explanation"),
             "n_reviews": product.get("n_reviews"),
+            "image_url": product.get("image_url"),
         }
         formatted_products.append(formatted)
     return formatted_products

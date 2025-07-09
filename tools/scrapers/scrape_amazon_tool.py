@@ -61,6 +61,7 @@ def run(query) -> list:
             "rating": details.get("rating"),
             "rating_distribution": details.get("rating_distribution", {}),
             "n_reviews": details.get("n_reviews"),
+            "image_url": details.get("image_url")
         })
         i += 1
         print(f"* Scraped product {i}: {title}")

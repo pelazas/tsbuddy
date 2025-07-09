@@ -4,7 +4,7 @@ from tools.formatting_tool import formatProducts
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
 from tools.scrapers import scrape_amazon_tool
-from database import save_products_to_db
+from tools.database import save_products_to_db
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]

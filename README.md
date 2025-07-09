@@ -46,6 +46,7 @@ The project follows a pipeline structure, where each step is handled by a specif
 
 ## How to Run
 
+1. Create a virtual environment, source into it.
 1.  Install the dependencies: `pip install -r requirements.txt`
 2.  Make sure you have a MongoDB instance running on `mongodb://localhost:27017/`.
 3.  Create a `.env` file in the root directory and add your Anthropic API key:

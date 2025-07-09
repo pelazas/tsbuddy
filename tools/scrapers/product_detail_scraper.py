@@ -17,6 +17,7 @@ def scrape_product_details(url: str) -> dict:
         histogram_text = None
         specs_text = None
         n_reviews = None
+        image_url = None
 
         try:
             rating_elem = page.query_selector('span[data-hook="rating-out-of-text"]')
@@ -37,7 +38,12 @@ def scrape_product_details(url: str) -> dict:
         try:
             n_reviews_elem = page.query_selector('#acrCustomerReviewText')
             n_reviews = n_reviews_elem.inner_text().strip() if n_reviews_elem else None
-            print(n_reviews)
+        except:
+            pass
+
+        try:
+            image_elem = image_elem = page.query_selector('#landingImage')
+            image_url = image_elem.get_attribute('src') if image_elem else None
         except:
             pass
 
@@ -48,4 +54,5 @@ def scrape_product_details(url: str) -> dict:
             "rating_distribution": histogram_text,
             "specs": specs_text,
             "n_reviews": n_reviews,
+            "image_url": image_url
         }
