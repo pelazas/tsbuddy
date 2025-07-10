@@ -16,4 +16,4 @@ def scrape():
     return jsonify(message=f"{products_added} products added to the database.")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8001)

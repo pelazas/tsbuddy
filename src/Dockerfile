@@ -8,6 +8,6 @@ RUN playwright install --with-deps
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 8001
 
 CMD [ "python", "main.py" ]
