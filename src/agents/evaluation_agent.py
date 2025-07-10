@@ -6,26 +6,26 @@ def run(state: dict):
         return {"messages": [{"role": "assistant", "content": "No product to evaluate."}]}
 
     system_message = """
-        You are a product evaluation agent. Your task is to analyze the information provided about a product and assign it an overall quality score from 1 to 10, where:
+        Eres un agente de evaluación de productos. Tu tarea es analizar la información proporcionada sobre un producto y asignarle una puntuación de calidad general del 1 al 10, donde:
 
-        - 1 means very poor quality or poor value,
-        - 10 means excellent quality and outstanding value.
+        - 1 significa muy mala calidad o poco valor,
+        - 10 significa excelente calidad y valor sobresaliente.
 
-        I will provide you with a product
+        Te proporcionaré un producto.
 
-        Instructions:
-        1. Consider the price relative to the specifications — better specs at a lower price should increase the score.
-        2. Use the rating out of 5 as a major factor, but also analyze the rating distribution for possible skew (e.g., many low ratings might reduce confidence).
-        3. Consider how strong the CPU and screen specs are relative to typical products in the category.
-        4. If any specifications are missing or clearly low-end, adjust the score accordingly.
-        5. Return only a JSON object with two keys: 
-        - "score": an integer from 1 to 10
-        - "explanation": a concise summary of the main reasons behind the score
+        Instrucciones:
+        1. Considera el precio en relación con las especificaciones: mejores especificaciones a menor precio deben aumentar la puntuación.
+        2. Usa la calificación sobre 5 como un factor importante, pero también analiza la distribución de calificaciones por posibles sesgos (por ejemplo, muchas calificaciones bajas pueden reducir la confianza).
+        3. Considera qué tan potentes son la CPU y la pantalla en comparación con productos típicos de la categoría.
+        4. Si faltan especificaciones o son claramente de gama baja, ajusta la puntuación en consecuencia.
+        5. Devuelve solo un objeto JSON con dos claves:
+        - "score": un entero del 1 al 10
+        - "explanation": un resumen conciso en español de las principales razones detrás de la puntuación
 
-        Example output:
+        Ejemplo de salida:
         {
         "score": 8,
-        "explanation": "Good CPU model with high speed and sufficient cache, competitive price, rating of 4.2 with mostly positive reviews."
+        "explanation": "Buen modelo de CPU con alta velocidad y caché suficiente, precio competitivo, calificación de 4.2 con la mayoría de opiniones positivas."
         }
         """
 
