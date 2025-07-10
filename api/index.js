@@ -11,8 +11,10 @@ connectDB();
 
 // A simple route
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Server running!');
 });
+
+app.use('/api/products', require('./controller/products_controller'));
 
 // Start the server
 app.listen(port, () => {
