@@ -15,4 +15,4 @@ const ProductSchema = new mongoose.Schema({
   category: { type: String }
 });
 
-module.exports = mongoose.model('Product', ProductSchema);
+module.exports = mongoose.model('products', ProductSchema);

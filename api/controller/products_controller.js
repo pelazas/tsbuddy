@@ -17,7 +17,8 @@ router.get('/:productId', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     // Get all unique categories
-    const categories = await Product.distinct('category');
+    const categories = await Product.find().distinct('category');
+    console.log('Categories:', categories);
     const results = {};
 
     // For each category, get top 10 products by score (descending)
