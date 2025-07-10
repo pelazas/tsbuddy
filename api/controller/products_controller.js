@@ -18,7 +18,6 @@ router.get('/', async (req, res) => {
   try {
     // Get all unique categories
     const categories = await Product.find().distinct('category');
-    console.log('Categories:', categories);
     const results = {};
 
     // For each category, get top 10 products by score (descending)
@@ -26,6 +25,7 @@ router.get('/', async (req, res) => {
       const topProducts = await Product.find({ category })
         .sort({ score: -1 })
         .limit(10)
+        .select('_id title url price rating explanation image_url') // Only select these fields
         .exec();
       results[category] = topProducts;
     }
