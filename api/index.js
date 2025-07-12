@@ -4,12 +4,14 @@ const cors = require('cors');
 const connectDB = require('./db'); 
 
 const app = express();
-const port = 8000;
+const port = 8100;
 
 // Set allowed origins based on environment
 const allowedOrigin = process.env.NODE_ENV === 'production'
   ? 'https://www.techshoppingbuddy.com'
-  : 'http://localhost:5174';
+  : 'http://localhost:5173';
+
+console.log("Mode: ",process.env.NODE_ENV);
 
 app.use(cors({
   origin: allowedOrigin,
