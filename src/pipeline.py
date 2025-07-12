@@ -4,7 +4,7 @@ from tools.formatting_tool import formatProducts
 from typing import TypedDict, Annotated
 from langgraph.graph.message import add_messages
 from tools.scrapers import scrape_amazon_tool
-from tools.database import save_products_to_db
+from tools.database import save_products_to_db, product_exists
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -29,7 +29,26 @@ def run_pipeline(query, category, numberOfProducts):
     search_results = scrape_amazon_tool.run(parsed_query, numberOfProducts)
     state["products"].extend(search_results)
 
-    # 4. Call the Evaluation agent with the state, print the evaluation results
+    # 4. Format the products
+    print("\n"+40*'*')
+    print("Formatting Products...")
+    products = state["products"]
+    formatted_result = formatProducts(products)
+    state["products"] = formatted_result
+
+    # 5. Check for repeated products
+    # for each product in state["products"], check if there is a product in the 
+    # mongodb with the same title or with the same brand and model
+    print("\n"+40*'*')
+    print("Checking for Repeated Products...")
+    repeated_products = []
+    for product in state["products"]:
+        if product_exists(product):
+            repeated_products.append(product)
+    state["products"] = [p for p in state["products"] if p not in repeated_products]
+    print(f"Found {len(repeated_products)} repeated products. They where updated and will not be evaluated.")
+
+    # 4. For non-repeated products, evaluate them using the evaluation agent
     print("\n"+40*'*')
     print("Evaluating Products...")
     if search_results and len(search_results) > 0:
@@ -39,11 +58,7 @@ def run_pipeline(query, category, numberOfProducts):
     else:
         print("No products found.")
 
-    print("\n"+40*'*')
-    print("Formatting Products...")
-    products = state["products"]
-    formatted_result = formatProducts(products)
-    state["products"] = formatted_result
+    
 
     # Save products to MongoDB
     print("\n"+40*'*')

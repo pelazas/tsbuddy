@@ -1,5 +1,6 @@
 import re
 import json
+from datetime import datetime
 
 def parse_price(price_str):
     if not price_str:
@@ -23,6 +24,22 @@ def parse_specs(specs_str):
             key, value = line.split("\t", 1)
             specs[key.strip()] = value.strip()
     return specs if specs else None
+
+def extract_brand_and_model(specs):
+    """Extract brand and model from specs dictionary"""
+    if not specs:
+        return None, None
+    
+    brand = specs.get("Marca", None)
+    model = None
+    
+    # Look for model with different possible keys
+    for key in specs.keys():
+        if key == "Modelo" or key == "Nombre del modelo" or key.startswith("Modelo"):
+            model = specs[key]
+            break
+    
+    return brand, model
 
 def parse_rating_distribution(rating_dist_str):
     if not rating_dist_str:
@@ -51,17 +68,24 @@ def formatProducts(products: list):
     formatted_products = []
 
     for idx, product in enumerate(products):
+        specs = parse_specs(product.get("specs"))
+        brand, model = extract_brand_and_model(specs)
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        
         formatted = {
             "title": product.get("title"),
             "price": parse_price(product.get("price")),
             "url": product.get("url"),
-            "specs": json.dumps(parse_specs(product.get("specs"))) if product.get("specs") else None,
+            "specs": json.dumps(specs) if specs else None,
+            "brand": brand,
+            "model": model,
             "rating": product.get("rating"),
             "rating_distribution": json.dumps(parse_rating_distribution(product.get("rating_distribution"))) if product.get("rating_distribution") else None,
             "score": parse_score(product.get("score")),
             "explanation": product.get("explanation"),
             "n_reviews": product.get("n_reviews"),
             "image_url": product.get("image_url"),
+            "previous_prices": product.get("previous_prices", {}) or {today: product.get("price")},
         }
         formatted_products.append(formatted)
     return formatted_products
