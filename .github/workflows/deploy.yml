@@ -1,0 +1,30 @@
+name: Deploy on Push
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use GitHub-hosted runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          cat <<EOF > ~/.ssh/btcpricetmrw.pem
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+          chmod 600 ~/.ssh/btcpricetmrw.pem
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-keyscan 159.69.205.221 >> ~/.ssh/known_hosts
+
+      - name: Run Commands via SSH
+        run: |
+          ssh -i ~/.ssh/btcpricetmrw.pem pelazas@159.69.205.221 "
+            cd tsbuddy && \
+            git pull https://${{ secrets.GH_TOKEN }}@github.com/pelazas/tsbuddy.git main && \
+            docker-compose down --volumes --rmi all --remove-orphans && \
+            docker-compose --profile production up --build -d
+          "
